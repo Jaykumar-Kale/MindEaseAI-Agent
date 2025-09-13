@@ -1,17 +1,32 @@
+
 # MindEaseAI-Agent (Prototype)
 
-MindEaseAI-Agent is a prototype AI Mental Health Assistant (voice + text). Use for demo / hackathon only.
+🚀 **MindEaseAI-Agent** is a prototype AI Mental Health Assistant (Text + Voice).  
+Built with **FastAPI (backend)** + **OpenAI GPT** + **ElevenLabs TTS** + **HTML/JS frontend**.  
 
-## Quick start
-1. Copy `.env.example` to `.env` and fill API keys.
-2. Create virtual env & install:
-   python -m venv venv
-   source venv/Scripts/activate   # on Git Bash
-   pip install -r requirements.txt
-3. Run backend:
-   uvicorn backend.app:app --reload --host 0.0.0.0 --port 8000
-4. Open frontend/index.html in your browser (or serve it via simple http server).
+⚠️ **Disclaimer:**  
+This is a **demo / hackathon prototype only**.  
+It is **NOT a clinical product** and must **not** be used as a replacement for professional medical advice.  
 
-## Notes
-- This is for demo only. Not a clinical product.
-- Add consent screen + helplines before testing with real users.
+---
+
+## 🌐 Live Demo
+- **Frontend (GitHub Pages):** [MindEaseAI Web App](https://jaykumar-kale.github.io/MindEaseAI-Agent/)  
+- **Backend (Render FastAPI):** [API Base URL](https://mindeaseai-agent-1.onrender.com)  
+
+---
+
+## ⚡ Features
+- 🗨️ Chat with an **empathetic AI mental health assistant**  
+- 🔊 **Voice replies** using ElevenLabs TTS  
+- 🚨 Detects **risk phrases** (e.g., "I want to die") and shows **helplines**  
+- 🌍 Runs free & open-source for demo/hackathon use  
+
+---
+
+## 🔧 Quick Start (Local Setup)
+
+1. Clone repo:
+   ```bash
+   git clone https://github.com/Jaykumar-Kale/MindEaseAI-Agent.git
+   cd MindEaseAI-Agent
