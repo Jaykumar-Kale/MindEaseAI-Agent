@@ -5,3 +5,5 @@ __pycache__/
 instance/
 .DS_Store
 node_modules/
+
+.vercel
