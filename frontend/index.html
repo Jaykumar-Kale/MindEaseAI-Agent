@@ -42,11 +42,14 @@
     <div id="log"></div>
 
     <div class="footer">
-      Demo prototype • Add helpline & consent before real users • For TiE submission: record 1-min demo showing text -> reply + voice.
+      Demo prototype • Add helpline & consent before real users • For TiE submission: record 1-min demo showing text → reply + voice.
     </div>
   </div>
 
 <script>
+// 🌍 Backend deployed on Render
+const BACKEND_URL = "https://mindeaseai-agent-1.onrender.com";
+
 const sendBtn = document.getElementById('send');
 const speakBtn = document.getElementById('speak');
 const clearBtn = document.getElementById('clear');
@@ -68,7 +71,7 @@ sendBtn.onclick = async () => {
   textIn.value = '';
   status.textContent = 'Thinking...';
   try {
-    const r = await fetch('http://127.0.0.1:8000/respond', {
+    const r = await fetch(`${BACKEND_URL}/respond`, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({text: txt})
@@ -83,7 +86,7 @@ sendBtn.onclick = async () => {
     append('MindEaseAI', j.reply, 'ai');
 
     try {
-      const tts = await fetch('http://127.0.0.1:8000/tts', {
+      const tts = await fetch(`${BACKEND_URL}/tts`, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({text: j.reply})
