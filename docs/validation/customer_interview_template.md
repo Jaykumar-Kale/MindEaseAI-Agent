@@ -1,0 +1,11 @@
+# Customer Interview Template (10 questions)
+- Customer name / demographic / contact (consent to record)
+- What is the main emotional or mental-health issue you face?
+- How do you currently try to solve it? (services, apps, people)
+- How often do you seek help? (daily/weekly/monthly/never)
+- What stops you from seeking professional help? (cost, stigma, access)
+- If an AI assistant could help, what would you expect it to do?
+- Which language(s) would you prefer?
+- Would you prefer text, voice call, or WhatsApp-style chat?
+- Would you be willing to try a free AI assistant now? (Yes/No)
+- Would you give feedback on prototypes? (Yes/No) - collect contact if yes

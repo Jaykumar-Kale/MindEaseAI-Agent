@@ -1,8 +1,138 @@
 <!doctype html>
 <html>
-<head><title>MindEaseAI Demo</title></head>
+<head>
+  <meta charset="utf-8" />
+  <title>MindEaseAI — Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root { --accent:#0b6efd; --ai:#0b8a5f; --bg:#f7f9fc; }
+    body{font-family:Inter,Arial,Helvetica,sans-serif;background:#ffffff;margin:0;padding:20px;display:flex;justify-content:center}
+    .card{width:760px;max-width:96%;border-radius:12px;padding:18px;border:1px solid #e6eefb;box-shadow:0 6px 20px rgba(11,110,237,0.05)}
+    h1{margin:0 0 8px;font-size:20px}
+    p.small{margin:4px 0 12px;color:#555;font-size:13px}
+    textarea{width:100%;height:84px;border-radius:8px;padding:10px;border:1px solid #ddd;resize:vertical}
+    .controls{display:flex;gap:8px;margin-top:8px}
+    button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+    button.secondary{background:#fff;color:var(--accent);border:1px solid #cfe0ff}
+    #log{margin-top:14px;background:var(--bg);padding:12px;border-radius:10px;min-height:200px;overflow:auto}
+    .msg{margin-bottom:10px}
+    .user b{color:var(--accent)}
+    .ai b{color:var(--ai)}
+    .meta{font-size:12px;color:#777;margin-bottom:8px}
+    .danger{color:#b00020;font-weight:600}
+    .footer{font-size:12px;color:#666;margin-top:10px}
+  </style>
+</head>
 <body>
-<h2>MindEaseAI - Prototype</h2>
-<p>This is a placeholder frontend. Replace with full code from script.</p>
+  <div class="card">
+    <h1>MindEaseAI — Free Mental Health Assistant (Demo)</h1>
+    <p class="small"><strong>Consent:</strong> Demo only. Do not share sensitive medical details. For emergencies call local services. This assistant is not a replacement for a professional.</p>
+
+    <div>
+      <textarea id="text" placeholder="Type how you're feeling (e.g. 'I feel anxious about my exams')"></textarea>
+      <div class="controls">
+        <button id="send">Send</button>
+        <button id="speak" class="secondary">Record (Local)</button>
+        <button id="clear" class="secondary">Clear Chat</button>
+        <div style="flex:1"></div>
+        <div id="status" class="meta">Idle</div>
+      </div>
+    </div>
+
+    <div id="log"></div>
+
+    <div class="footer">
+      Demo prototype • Add helpline & consent before real users • For TiE submission: record 1-min demo showing text -> reply + voice.
+    </div>
+  </div>
+
+<script>
+const sendBtn = document.getElementById('send');
+const speakBtn = document.getElementById('speak');
+const clearBtn = document.getElementById('clear');
+const log = document.getElementById('log');
+const status = document.getElementById('status');
+const textIn = document.getElementById('text');
+
+function append(who, text, css='') {
+  const d = document.createElement('div');
+  d.className = 'msg ' + css;
+  d.innerHTML = `<b>${who}:</b> ${text}`;
+  log.prepend(d);
+}
+
+sendBtn.onclick = async () => {
+  const txt = textIn.value.trim();
+  if (!txt) { alert('Type a message'); return; }
+  append('You', txt, 'user');
+  textIn.value = '';
+  status.textContent = 'Thinking...';
+  try {
+    const r = await fetch('http://127.0.0.1:8000/respond', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({text: txt})
+    });
+    if (!r.ok) {
+      const err = await r.text();
+      append('System', 'Error: ' + err, 'danger');
+      status.textContent = 'Idle';
+      return;
+    }
+    const j = await r.json();
+    append('MindEaseAI', j.reply, 'ai');
+
+    try {
+      const tts = await fetch('http://127.0.0.1:8000/tts', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({text: j.reply})
+      });
+      if (tts.ok) {
+        const blob = await tts.blob();
+        const url = URL.createObjectURL(blob);
+        const a = new Audio(url);
+        a.play();
+      } else {
+        console.warn('TTS not available', await tts.text());
+      }
+    } catch (e) {
+      console.warn('TTS error', e);
+    }
+  } catch (e) {
+    append('System', 'Network or backend error: ' + e.message, 'danger');
+  } finally {
+    status.textContent = 'Idle';
+  }
+};
+
+let mediaRecorder, chunks = [];
+speakBtn.onclick = async () => {
+  if (!mediaRecorder) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+      mediaRecorder = new MediaRecorder(stream);
+      chunks = [];
+      mediaRecorder.ondataavailable = e => chunks.push(e.data);
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(chunks, {type: 'audio/webm'});
+        append('System', 'Audio recorded locally. For this prototype, please transcribe or type the message to send to AI.', 'meta');
+      };
+      mediaRecorder.start();
+      speakBtn.textContent = 'Stop';
+      status.textContent = 'Recording...';
+    } catch (err) {
+      alert('Microphone access denied or not available: ' + err.message);
+    }
+  } else {
+    mediaRecorder.stop();
+    mediaRecorder = null;
+    speakBtn.textContent = 'Record (Local)';
+    status.textContent = 'Idle';
+  }
+};
+
+clearBtn.onclick = () => { log.innerHTML = ''; }
+</script>
 </body>
 </html>
